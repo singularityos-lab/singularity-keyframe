@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/dev/sinty/keyframe/icons/scalable/actions">
+    <file alias="keyframe-add-symbolic.svg">icons/symbolic/keyframe-add-symbolic.svg</file>
+    <file alias="keyframe-composition-symbolic.svg">icons/symbolic/keyframe-composition-symbolic.svg</file>
+    <file alias="keyframe-cube-symbolic.svg">icons/symbolic/keyframe-cube-symbolic.svg</file>
+    <file alias="keyframe-ellipse-symbolic.svg">icons/symbolic/keyframe-ellipse-symbolic.svg</file>
+    <file alias="keyframe-graph-symbolic.svg">icons/symbolic/keyframe-graph-symbolic.svg</file>
+    <file alias="keyframe-hand-symbolic.svg">icons/symbolic/keyframe-hand-symbolic.svg</file>
+    <file alias="keyframe-layers-symbolic.svg">icons/symbolic/keyframe-layers-symbolic.svg</file>
+    <file alias="keyframe-pen-symbolic.svg">icons/symbolic/keyframe-pen-symbolic.svg</file>
+    <file alias="keyframe-puppet-symbolic.svg">icons/symbolic/keyframe-puppet-symbolic.svg</file>
+    <file alias="keyframe-rect-symbolic.svg">icons/symbolic/keyframe-rect-symbolic.svg</file>
+    <file alias="keyframe-render-symbolic.svg">icons/symbolic/keyframe-render-symbolic.svg</file>
+    <file alias="keyframe-roi-symbolic.svg">icons/symbolic/keyframe-roi-symbolic.svg</file>
+    <file alias="keyframe-select-symbolic.svg">icons/symbolic/keyframe-select-symbolic.svg</file>
+    <file alias="keyframe-shape-symbolic.svg">icons/symbolic/keyframe-shape-symbolic.svg</file>
+    <file alias="keyframe-star-symbolic.svg">icons/symbolic/keyframe-star-symbolic.svg</file>
+    <file alias="keyframe-stopwatch-symbolic.svg">icons/symbolic/keyframe-stopwatch-symbolic.svg</file>
+    <file alias="keyframe-text-symbolic.svg">icons/symbolic/keyframe-text-symbolic.svg</file>
+    <file alias="keyframe-track-symbolic.svg">icons/symbolic/keyframe-track-symbolic.svg</file>
+  </gresource>
+</gresources>

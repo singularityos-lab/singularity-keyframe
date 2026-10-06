@@ -1,0 +1,19 @@
+[Desktop Entry]
+Name=Keyframe
+GenericName=Motion Graphics and Compositing
+Comment=Animate titles, graphics and effects, and composite video
+Exec=singularity-keyframe %U
+Icon=dev.sinty.keyframe
+Terminal=false
+Type=Application
+Categories=AudioVideo;Video;Graphics;2DGraphics;
+MimeType=application/x-keyframe;
+Keywords=motion;animation;compositing;keyframe;lottie;titles;effects;tracking;vfx;
+StartupWMClass=dev.sinty.keyframe
+X-Singularity-Dock-Recent=true
+Actions=new-project;
+
+[Desktop Action new-project]
+Name=New Project
+Icon=document-new-symbolic
+Exec=singularity-keyframe

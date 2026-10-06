@@ -1,0 +1,10 @@
+gst_plugin = shared_module('gstkeyframe',
+  files('stream.vala', 'plugin.c'),
+  dependencies: [core_dep, gst_base_dep],
+  vala_args: core_vala_args,
+  vala_header: 'keyframe-gst.h',
+  link_depends: core_lib,
+  name_prefix: 'lib',
+  install: true,
+  install_dir: get_option('libdir') / 'gstreamer-1.0',
+)

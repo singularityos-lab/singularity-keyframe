@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-keyframe">
+    <comment>Keyframe project</comment>
+    <sub-class-of type="application/zip"/>
+    <magic priority="70">
+      <match type="string" offset="30" value="mimetypeapplication/x-keyframe"/>
+    </magic>
+    <glob pattern="*.keyframe"/>
+  </mime-type>
+</mime-info>

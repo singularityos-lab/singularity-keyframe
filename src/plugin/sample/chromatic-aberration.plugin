@@ -1,0 +1,7 @@
+[Plugin]
+Module=keyframe-chromatic-aberration
+Name=Chromatic Aberration
+Description=Splits the red and blue channels to imitate lens fringing
+Authors=Singularity
+Copyright=Singularity
+Website=https://github.com/singularityos-lab/singularity-desktop

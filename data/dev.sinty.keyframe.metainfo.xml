@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>dev.sinty.keyframe</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <name>Keyframe</name>
+  <summary>Animate titles, graphics and effects, and composite video</summary>
+  <description>
+    <p>Keyframe is for motion graphics and compositing: titles, infographics, interface animations and effects on video. You work with compositions and layers animated by keyframes, and export to video, image sequences or Lottie.</p>
+    <ul>
+      <li>Compositions, precompositions, solids, nulls, adjustment, shape, text, footage, camera and light layers</li>
+      <li>Keyframes on every property with linear, Bezier and hold interpolation, a graph editor and motion paths</li>
+      <li>Masks with variable feather, track mattes, blending modes and motion blur</li>
+      <li>Shape operators, text animators, effects, expressions and scripting</li>
+      <li>Motion tracking, stabilization, planar and camera tracking, 2.5D layers</li>
+      <li>Render queue for video, image sequences with alpha and Lottie, and live compositions in Montage</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">dev.sinty.keyframe.desktop</launchable>
+  <url type="bugtracker">https://github.com/singularityos-lab/singularity-desktop/issues</url>
+  <content_rating type="oars-1.1"/>
+</component>

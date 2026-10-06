@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="dev.sinty.keyframe" path="/dev/sinty/keyframe/">
+    <key name="default-width" type="i">
+      <range min="16" max="16384"/>
+      <default>1920</default>
+      <summary>Width of new compositions, in pixels</summary>
+    </key>
+    <key name="default-height" type="i">
+      <range min="16" max="16384"/>
+      <default>1080</default>
+      <summary>Height of new compositions, in pixels</summary>
+    </key>
+    <key name="default-fps" type="d">
+      <range min="1" max="240"/>
+      <default>30</default>
+      <summary>Frame rate of new compositions</summary>
+    </key>
+    <key name="default-duration" type="i">
+      <range min="1" max="36000"/>
+      <default>10</default>
+      <summary>Duration of new compositions, in seconds</summary>
+    </key>
+    <key name="bit-depth" type="s">
+      <choices>
+        <choice value="8"/>
+        <choice value="16"/>
+        <choice value="32"/>
+      </choices>
+      <default>'32'</default>
+      <summary>Color depth of new projects, in bits per channel</summary>
+    </key>
+    <key name="preview-resolution" type="s">
+      <choices>
+        <choice value="auto"/>
+        <choice value="full"/>
+        <choice value="half"/>
+        <choice value="third"/>
+        <choice value="quarter"/>
+      </choices>
+      <default>'auto'</default>
+      <summary>Resolution used to preview compositions</summary>
+    </key>
+    <key name="preview-cache-mb" type="i">
+      <range min="64" max="65536"/>
+      <default>1024</default>
+      <summary>Memory used to keep rendered frames for preview, in megabytes</summary>
+    </key>
+    <key name="autosave-minutes" type="i">
+      <range min="0" max="120"/>
+      <default>5</default>
+      <summary>Minutes between automatic recovery copies, 0 turns them off</summary>
+    </key>
+  </schema>
+</schemalist>

@@ -1,0 +1,74 @@
+{
+    "schema-id": "dev.sinty.keyframe",
+    "settings": [
+        {
+            "key": "default-width",
+            "label": "Composition Width",
+            "type": "int",
+            "widget": "spin",
+            "min": 16,
+            "max": 16384,
+            "subtitle": "In pixels, used for new compositions"
+        },
+        {
+            "key": "default-height",
+            "label": "Composition Height",
+            "type": "int",
+            "widget": "spin",
+            "min": 16,
+            "max": 16384,
+            "subtitle": "In pixels, used for new compositions"
+        },
+        {
+            "key": "default-duration",
+            "label": "Composition Duration",
+            "type": "int",
+            "widget": "spin",
+            "min": 1,
+            "max": 36000,
+            "subtitle": "In seconds"
+        },
+        {
+            "key": "bit-depth",
+            "label": "Color Depth",
+            "type": "string",
+            "widget": "combo",
+            "options": [
+                { "id": "8", "label": "8 bits per channel" },
+                { "id": "16", "label": "16 bits per channel" },
+                { "id": "32", "label": "32 bits per channel, floating point" }
+            ]
+        },
+        {
+            "key": "preview-resolution",
+            "label": "Preview Resolution",
+            "type": "string",
+            "widget": "combo",
+            "options": [
+                { "id": "auto", "label": "Automatic" },
+                { "id": "full", "label": "Full" },
+                { "id": "half", "label": "Half" },
+                { "id": "third", "label": "Third" },
+                { "id": "quarter", "label": "Quarter" }
+            ]
+        },
+        {
+            "key": "preview-cache-mb",
+            "label": "Preview Memory",
+            "type": "int",
+            "widget": "spin",
+            "min": 64,
+            "max": 65536,
+            "subtitle": "In megabytes, for frames kept ready to play"
+        },
+        {
+            "key": "autosave-minutes",
+            "label": "Recovery Copies",
+            "type": "int",
+            "widget": "spin",
+            "min": 0,
+            "max": 120,
+            "subtitle": "Minutes between automatic copies, 0 turns them off"
+        }
+    ]
+}
