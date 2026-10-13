@@ -329,14 +329,15 @@ namespace Singularity.Apps.Keyframe {
         }
 
         public Gee.ArrayList<double?> key_times () {
-            var times = new Gee.ArrayList<double?> ();
+            var all = new Gee.ArrayList<double?> ();
             foreach (var p in all_props ())
-                foreach (var k in p.keys) {
-                    bool found = false;
-                    foreach (var e in times) if ((e - k.time).abs () < 1e-6) found = true;
-                    if (!found) times.add (k.time);
-                }
-            times.sort ((a, b) => a < b ? -1 : (a > b ? 1 : 0));
+                foreach (var k in p.keys) all.add (k.time);
+            all.sort ((a, b) => a < b ? -1 : (a > b ? 1 : 0));
+            var times = new Gee.ArrayList<double?> ();
+            foreach (var t in all) {
+                if (times.size > 0 && (t - times[times.size - 1]).abs () < 1e-6) continue;
+                times.add (t);
+            }
             return times;
         }
 

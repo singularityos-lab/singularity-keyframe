@@ -59,6 +59,10 @@ namespace Singularity.Apps.Keyframe {
         private double box_x1;
         private double box_y1;
         private Pango.Layout? text_layout = null;
+        private Pango.FontDescription? font_normal = null;
+        private Pango.FontDescription? font_bold = null;
+        private int layout_weight = -1;
+        private HashTable<string, Gdk.RGBA?> color_cache = new HashTable<string, Gdk.RGBA?> (str_hash, str_equal);
         private Gee.HashMap<string, AudioPeaks> peaks = new Gee.HashMap<string, AudioPeaks> ();
         public static double[,] label_colors = {
             { 0.55, 0.55, 0.58 }, { 0.84, 0.32, 0.32 }, { 0.93, 0.76, 0.27 }, { 0.38, 0.72, 0.89 }, { 0.89, 0.53, 0.75 },
@@ -247,17 +251,31 @@ namespace Singularity.Apps.Keyframe {
         }
 
         private void color (Cairo.Context cr, string name, double alpha = 1, double r = 0.8, double g = 0.8, double b = 0.8) {
-            Gdk.RGBA c;
-            if (get_style_context ().lookup_color (name, out c)) cr.set_source_rgba (c.red, c.green, c.blue, c.alpha * alpha);
+            Gdk.RGBA? cached = color_cache[name];
+            if (cached == null) {
+                Gdk.RGBA c;
+                if (get_style_context ().lookup_color (name, out c)) cached = c;
+                else cached = Gdk.RGBA () { red = (float) r, green = (float) g, blue = (float) b, alpha = -1 };
+                color_cache[name] = cached;
+            }
+            if (cached.alpha >= 0) cr.set_source_rgba (cached.red, cached.green, cached.blue, cached.alpha * alpha);
             else cr.set_source_rgba (r, g, b, alpha);
         }
 
         private void text (Cairo.Context cr, string s, double x, double y, double max_w = 0, bool dim = false, bool bold = false) {
             if (text_layout == null) text_layout = create_pango_layout ("");
             text_layout.set_text (s, -1);
-            var fd = get_pango_context ().get_font_description ().copy ();
-            fd.set_weight (bold ? Pango.Weight.BOLD : Pango.Weight.NORMAL);
-            text_layout.set_font_description (fd);
+            if (font_normal == null) {
+                font_normal = get_pango_context ().get_font_description ().copy ();
+                font_normal.set_weight (Pango.Weight.NORMAL);
+                font_bold = font_normal.copy ();
+                font_bold.set_weight (Pango.Weight.BOLD);
+            }
+            int weight = bold ? 1 : 0;
+            if (weight != layout_weight) {
+                text_layout.set_font_description (bold ? font_bold : font_normal);
+                layout_weight = weight;
+            }
             if (max_w > 0) {
                 text_layout.set_width ((int) (max_w * Pango.SCALE));
                 text_layout.set_ellipsize (Pango.EllipsizeMode.END);
@@ -292,6 +310,10 @@ namespace Singularity.Apps.Keyframe {
         }
 
         private void draw (DrawingArea area, Cairo.Context cr, int w, int h) {
+            color_cache.remove_all ();
+            font_normal = null;
+            font_bold = null;
+            layout_weight = -1;
             color (cr, "view_bg_color", 1, 0.15, 0.15, 0.16);
             cr.paint ();
             if (doc.comp == null) return;
