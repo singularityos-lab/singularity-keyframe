@@ -325,7 +325,9 @@ namespace Singularity.Apps.Keyframe {
                 });
                 w.doc.structure_changed ();
                 if (w.doc.comp == null && w.doc.project.compositions ().size > 0) w.doc.open_comp (w.doc.project.compositions ()[0]);
-                w.toast (ok ? (output.strip () != "" ? output.strip () : _("Script finished")) : output);
+                string message = output;
+                if (ok) message = output.strip () != "" ? output.strip () : _("Script finished");
+                w.toast (message);
             });
             d.present ();
         }
