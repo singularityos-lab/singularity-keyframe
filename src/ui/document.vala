@@ -32,18 +32,26 @@ namespace Singularity.Apps.Keyframe {
             this.live = live;
             renderer = new Renderer (new Project ());
             live.changed.connect ((c, l) => {
+                mutex.lock ();
                 revision++;
+                if (prefetch.size > 0) refresh_copy ();
+                mutex.unlock ();
                 if (c != null) renderer.cache.invalidate (live, c, l);
             });
             live.structure_changed.connect (() => {
+                mutex.lock ();
                 revision++;
+                if (prefetch.size > 0) refresh_copy ();
+                mutex.unlock ();
                 renderer.cache.clear ();
             });
             thread = new Thread<bool> ("keyframe-render", loop);
         }
 
         public void touch () {
+            mutex.lock ();
             revision++;
+            mutex.unlock ();
         }
 
         public void stop () {
@@ -140,6 +148,10 @@ namespace Singularity.Apps.Keyframe {
                 var timer = new Timer ();
                 var img = renderer.render (comp, req.time, req.settings);
                 last_ms = timer.elapsed () * 1000;
+                mutex.lock ();
+                bool stale = rev != revision;
+                mutex.unlock ();
+                if (stale) renderer.cache.invalidate_range (comp.id, req.time, req.time);
                 if (is_prefetch) {
                     var cid = comp.id;
                     int f = (int) Math.round (req.time * comp.fps);
