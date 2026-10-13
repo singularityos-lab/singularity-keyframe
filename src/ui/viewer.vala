@@ -232,43 +232,38 @@ namespace Singularity.Apps.Keyframe {
             queue_draw ();
         }
 
-        private void draw (DrawingArea area, Cairo.Context cr, int w, int h) {
+        public override void snapshot (Gtk.Snapshot snapshot) {
             var style = get_style_context ();
             Gdk.RGBA bg;
             if (!style.lookup_color ("window_bg_color", out bg)) bg = { 0.12f, 0.12f, 0.13f, 1 };
-            cr.set_source_rgb (bg.red * 0.85, bg.green * 0.85, bg.blue * 0.85);
-            cr.paint ();
+            bg = { bg.red * 0.85f, bg.green * 0.85f, bg.blue * 0.85f, 1 };
+            snapshot.append_color (bg, Graphene.Rect ().init (0, 0, get_width (), get_height ()));
+            var comp = doc.comp;
+            if (comp != null) {
+                var frame = Graphene.Rect ().init ((float) offset_x, (float) offset_y,
+                    (float) (comp.width * zoom), (float) (comp.height * zoom));
+                if (!checker) {
+                    Gdk.RGBA fill = { (float) comp.background[0], (float) comp.background[1], (float) comp.background[2], 1 };
+                    snapshot.append_color (fill, frame);
+                }
+                if (texture != null && shown != null) {
+                    double rx = shown.settings.roi ? shown.settings.roi_x : 0;
+                    double ry = shown.settings.roi ? shown.settings.roi_y : 0;
+                    double ds = shown.settings.downsample;
+                    var bounds = Graphene.Rect ().init ((float) (offset_x + rx * zoom), (float) (offset_y + ry * zoom),
+                        (float) (texture.get_width () * ds * zoom), (float) (texture.get_height () * ds * zoom));
+                    snapshot.push_clip (frame);
+                    snapshot.append_scaled_texture (texture,
+                        zoom * ds > 1.5 ? Gsk.ScalingFilter.NEAREST : Gsk.ScalingFilter.TRILINEAR, bounds);
+                    snapshot.pop ();
+                }
+            }
+            base.snapshot (snapshot);
+        }
+
+        private void draw (DrawingArea area, Cairo.Context cr, int w, int h) {
             if (doc.comp == null) return;
             var comp = doc.comp;
-            cr.save ();
-            cr.translate (offset_x, offset_y);
-            cr.scale (zoom, zoom);
-            if (!checker) {
-                cr.set_source_rgb (comp.background[0], comp.background[1], comp.background[2]);
-                cr.rectangle (0, 0, comp.width, comp.height);
-                cr.fill ();
-            }
-            if (texture != null && shown != null) {
-                double rx = shown.settings.roi ? shown.settings.roi_x : 0;
-                double ry = shown.settings.roi ? shown.settings.roi_y : 0;
-                double ds = shown.settings.downsample;
-                cr.save ();
-                cr.rectangle (0, 0, comp.width, comp.height);
-                cr.clip ();
-                cr.translate (rx, ry);
-                cr.scale (ds, ds);
-                var surface = texture_surface (texture);
-                if (!checker) {
-                    var un = surface;
-                    cr.set_source_surface (un, 0, 0);
-                } else {
-                    cr.set_source_surface (surface, 0, 0);
-                }
-                cr.get_source ().set_filter (zoom * ds > 1.5 ? Cairo.Filter.NEAREST : Cairo.Filter.GOOD);
-                cr.paint ();
-                cr.restore ();
-            }
-            cr.restore ();
             cr.set_line_width (1);
             cr.set_source_rgba (1, 1, 1, 0.25);
             cr.rectangle (offset_x - 0.5, offset_y - 0.5, comp.width * zoom + 1, comp.height * zoom + 1);
@@ -290,22 +285,6 @@ namespace Singularity.Apps.Keyframe {
                 cr.rectangle (double.min (rubber_x0, rubber_x1), double.min (rubber_y0, rubber_y1), (rubber_x1 - rubber_x0).abs (), (rubber_y1 - rubber_y0).abs ());
                 cr.stroke ();
             }
-        }
-
-        private Cairo.ImageSurface texture_surface (Gdk.Texture tex) {
-            int w = tex.get_width (), h = tex.get_height ();
-            var surface = new Cairo.ImageSurface (Cairo.Format.ARGB32, w, h);
-            surface.flush ();
-            var downloader = new Gdk.TextureDownloader (tex);
-            downloader.set_format (Gdk.MemoryFormat.B8G8R8A8_PREMULTIPLIED);
-            size_t stride;
-            var bytes = downloader.download_bytes (out stride);
-            unowned uint8[] src = bytes.get_data ();
-            unowned uint8[] dst = surface.get_data ();
-            int ds = surface.get_stride ();
-            for (int y = 0; y < h; y++) Memory.copy (&dst[y * ds], &src[y * stride], w * 4);
-            surface.mark_dirty ();
-            return surface;
         }
 
         private void draw_safe (Cairo.Context cr, Composition comp) {
