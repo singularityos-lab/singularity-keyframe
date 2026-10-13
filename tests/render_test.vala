@@ -382,6 +382,18 @@ void test_footage_with_audio () {
         img.get_pixel (32, 24, out cr, out cg, out cb, out ca);
         if (!(cr > 0.8 && ca > 0.99)) stderr.printf ("decode %f %f %s\n", cr, ca, r.media.last_error);
         check (cr > 0.8 && ca > 0.99, "video frame decoded from a file that also has audio");
+        var late = new Composition ("Late", 64, 48, 15, 2);
+        p.add_item (late);
+        var ll = Factory.footage_layer (late, f);
+        ll.start_time = 1;
+        ll.in_point = 1;
+        ll.out_point = 2;
+        late.add_layer (ll);
+        foreach (double at in new double[] { 1.0, 1.0 + 1.0 / 15 }) {
+            var li = r.render (late, at, rs);
+            li.get_pixel (32, 24, out cr, out cg, out cb, out ca);
+            check (cr > 0.8 && ca > 0.99, "late footage visible at %.3f s (alpha %.2f)".printf (at, ca));
+        }
         r.media.close ();
     } catch (Error e) {
         check (false, "probe " + e.message);

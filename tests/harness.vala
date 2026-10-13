@@ -5,7 +5,9 @@ namespace Singularity.Apps.Keyframe.Test {
         if (!cond) {
             stderr.printf ("FAIL: %s\n", what);
             failures++;
+            return;
         }
+        print ("ok %s\n", what);
     }
 
     public bool near (double a, double b, double eps = 1e-3) {
