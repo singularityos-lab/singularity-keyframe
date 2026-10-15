@@ -57,8 +57,13 @@ namespace Singularity.Apps.Keyframe {
                 this.d = d;
             }
 
+            public void seek (uint64 target) throws Error {
+                if (target > d.length) throw new ImageError.FORMAT ("Truncated EXR");
+                pos = (size_t) target;
+            }
+
             public uint32 u32 () throws Error {
-                if (pos + 4 > d.length) throw new ImageError.FORMAT ("Truncated EXR");
+                if (pos > d.length || d.length - pos < 4) throw new ImageError.FORMAT ("Truncated EXR");
                 uint32 v = (uint32) d[pos] | ((uint32) d[pos + 1] << 8) | ((uint32) d[pos + 2] << 16) | ((uint32) d[pos + 3] << 24);
                 pos += 4;
                 return v;
@@ -97,16 +102,18 @@ namespace Singularity.Apps.Keyframe {
                 if (name == "") break;
                 var type = r.cstr ();
                 uint32 size = r.u32 ();
-                size_t end = r.pos + size;
+                uint64 end = (uint64) r.pos + size;
+                if (end > data.length) throw new ImageError.FORMAT ("Truncated EXR header");
                 if (name == "channels" && type == "chlist") {
-                    while (r.pos < end - 1) {
+                    while (r.pos + 1 < end && channels.size < 64) {
                         var c = new Channel ();
                         c.name = r.cstr ();
                         c.type = (int) r.u32 ();
-                        r.pos += 12;
+                        r.seek ((uint64) r.pos + 12);
                         channels.add (c);
                     }
                 } else if (name == "compression") {
+                    if (size < 1) throw new ImageError.FORMAT ("Truncated EXR header");
                     compression = r.d[r.pos];
                 } else if (name == "dataWindow") {
                     x0 = (int) r.u32 ();
@@ -114,10 +121,11 @@ namespace Singularity.Apps.Keyframe {
                     x1 = (int) r.u32 ();
                     y1 = (int) r.u32 ();
                 }
-                r.pos = end;
+                r.seek (end);
             }
-            int w = x1 - x0 + 1, h = y1 - y0 + 1;
-            if (w <= 0 || h <= 0 || w > 32768 || h > 32768) throw new ImageError.FORMAT ("Bad EXR size");
+            int64 w64 = (int64) x1 - x0 + 1, h64 = (int64) y1 - y0 + 1;
+            if (w64 <= 0 || h64 <= 0 || w64 > 32768 || h64 > 32768) throw new ImageError.FORMAT ("Bad EXR size");
+            int w = (int) w64, h = (int) h64;
             int lines_per_block = compression == 3 ? 16 : (compression == 4 ? 32 : 1);
             if (compression > 3) throw new ImageError.UNSUPPORTED ("OpenEXR compression %d is not supported", compression);
             int blocks = (h + lines_per_block - 1) / lines_per_block;
@@ -130,10 +138,12 @@ namespace Singularity.Apps.Keyframe {
             foreach (var c in channels) if (c.name == "A") has_alpha = true;
             if (!has_alpha) img.fill (0, 0, 0, 1);
             for (int b = 0; b < blocks; b++) {
-                r.pos = (size_t) offsets[b];
-                int y = (int) r.u32 () - y0;
+                r.seek (offsets[b]);
+                int64 y64 = (int64) (int32) r.u32 () - y0;
                 uint32 size = r.u32 ();
-                if (r.pos + size > data.length) throw new ImageError.FORMAT ("Truncated EXR block");
+                if ((uint64) r.pos + size > data.length) throw new ImageError.FORMAT ("Truncated EXR block");
+                if (y64 < 0 || y64 >= h) throw new ImageError.FORMAT ("Bad EXR block position");
+                int y = (int) y64;
                 int lines = int.min (lines_per_block, h - y);
                 size_t expected = line_bytes * lines;
                 uint8[] block = data[r.pos:r.pos + size];
@@ -181,14 +191,17 @@ namespace Singularity.Apps.Keyframe {
                 int8 n = (int8) src[i++];
                 if (n < 0) {
                     int count = -n;
+                    if (i + count > src.length) break;
                     out_data.append (src[i:i + count]);
                     i += count;
                 } else {
+                    if (i >= src.length) break;
                     var rep = new uint8[n + 1];
                     for (int k = 0; k <= n; k++) rep[k] = src[i];
                     out_data.append (rep);
                     i++;
                 }
+                if (out_data.len > expected) break;
             }
             return unpredict (out_data.steal ());
         }

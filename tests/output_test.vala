@@ -131,6 +131,28 @@ void red_at (uint8[] px, int w, int x, int y, string what) {
     check (px.length > i + 3 && px[i] > 200 && px[i + 1] < 60 && px[i + 2] < 60, what + " red pixel (%d,%d,%d)".printf (px.length > i + 2 ? px[i] : -1, px.length > i + 2 ? px[i + 1] : -1, px.length > i + 2 ? px[i + 2] : -1));
 }
 
+void damage_images (uint8[] tiff, uint8[] exr) {
+    var rand = new Rand.with_seed (13);
+    for (int round = 0; round < 300; round++) {
+        uint8[] t = tiff.copy ();
+        uint8[] e = exr.copy ();
+        int flips = 1 + rand.int_range (0, 6);
+        for (int i = 0; i < flips; i++) {
+            t[rand.int_range (0, int.min (t.length, 400))] = (uint8) rand.int_range (0, 256);
+            e[rand.int_range (0, int.min (e.length, 600))] = (uint8) rand.int_range (0, 256);
+        }
+        try {
+            Tiff.decode (t);
+        } catch (Error err) {
+        }
+        try {
+            Exr.decode (e);
+        } catch (Error err) {
+        }
+    }
+    check (true, "damaged tiff and exr do not crash");
+}
+
 void test_formats () {
     Composition comp;
     var p = build_project (out comp);
@@ -162,6 +184,9 @@ void test_formats () {
         var eimg = Exr.decode (data);
         eimg.get_pixel (8, 24, out r, out g, out b, out a);
         check (near (r, 1, 2e-3), "exr half frame");
+        uint8[] tiff_data;
+        FileUtils.get_data (tif, out tiff_data);
+        damage_images (tiff_data, data);
         if (Encoders.find ("jpeg-sequence").available) {
             var jpg = render_one (p, comp, "jpeg-sequence", false);
             var pb = new Gdk.Pixbuf.from_file (jpg);

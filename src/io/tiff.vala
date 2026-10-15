@@ -14,12 +14,12 @@ namespace Singularity.Apps.Keyframe {
             }
 
             public uint16 u16 (size_t p) throws Error {
-                if (p + 2 > d.length) throw new ImageError.FORMAT ("Truncated TIFF");
+                if (p > d.length || d.length - p < 2) throw new ImageError.FORMAT ("Truncated TIFF");
                 return le ? (uint16) (d[p] | (d[p + 1] << 8)) : (uint16) ((d[p] << 8) | d[p + 1]);
             }
 
             public uint32 u32 (size_t p) throws Error {
-                if (p + 4 > d.length) throw new ImageError.FORMAT ("Truncated TIFF");
+                if (p > d.length || d.length - p < 4) throw new ImageError.FORMAT ("Truncated TIFF");
                 if (le) return (uint32) d[p] | ((uint32) d[p + 1] << 8) | ((uint32) d[p + 2] << 16) | ((uint32) d[p + 3] << 24);
                 return ((uint32) d[p] << 24) | ((uint32) d[p + 1] << 16) | ((uint32) d[p + 2] << 8) | (uint32) d[p + 3];
             }
@@ -28,6 +28,7 @@ namespace Singularity.Apps.Keyframe {
                 uint16 type = u16 (entry + 2);
                 uint32 count = u32 (entry + 4);
                 int size = type == 3 ? 2 : 4;
+                if ((uint64) count * size > d.length) throw new ImageError.FORMAT ("Bad TIFF tag");
                 size_t p = count * size <= 4 ? entry + 8 : u32 (entry + 8);
                 var r = new uint32[count];
                 for (uint32 i = 0; i < count; i++) r[i] = type == 3 ? u16 (p + i * 2) : u32 (p + i * 4);
@@ -71,6 +72,8 @@ namespace Singularity.Apps.Keyframe {
                 }
             }
             if (width == 0 || height == 0 || offsets.length == 0) throw new ImageError.FORMAT ("Bad TIFF");
+            if (width > 32768 || height > 32768 || spp == 0 || spp > 16) throw new ImageError.FORMAT ("Bad TIFF size");
+            if (counts.length < offsets.length) throw new ImageError.FORMAT ("Bad TIFF strips");
             if (planar != 1) throw new ImageError.UNSUPPORTED ("Planar TIFF is not supported");
             int bits = (int) bps[0];
             int bytes = bits / 8;
@@ -79,6 +82,7 @@ namespace Singularity.Apps.Keyframe {
             size_t row_bytes = (size_t) width * spp * bytes;
             var pixels = new ByteArray ();
             for (int s = 0; s < offsets.length; s++) {
+                if ((uint64) offsets[s] + counts[s] > data.length) throw new ImageError.FORMAT ("Truncated TIFF strip");
                 uint8[] chunk = data[offsets[s]:offsets[s] + counts[s]];
                 uint8[] raw;
                 switch (compression) {
@@ -154,9 +158,11 @@ namespace Singularity.Apps.Keyframe {
             while (i < src.length) {
                 int8 n = (int8) src[i++];
                 if (n >= 0) {
+                    if (i + n + 1 > src.length) break;
                     out_data.append (src[i:i + n + 1]);
                     i += n + 1;
                 } else if (n != -128) {
+                    if (i >= src.length) break;
                     var rep = new uint8[1 - n];
                     for (int k = 0; k < rep.length; k++) rep[k] = src[i];
                     out_data.append (rep);
@@ -194,7 +200,7 @@ namespace Singularity.Apps.Keyframe {
                 Bytes entry;
                 if (code < table.size) {
                     entry = table[code];
-                    if (prev != null) {
+                    if (prev != null && table.size < 4096) {
                         var nb = new ByteArray ();
                         nb.append (prev.get_data ());
                         nb.append ({ entry.get_data ()[0] });
@@ -205,7 +211,7 @@ namespace Singularity.Apps.Keyframe {
                     nb.append (prev.get_data ());
                     nb.append ({ prev.get_data ()[0] });
                     entry = ByteArray.free_to_bytes (nb);
-                    table.add (entry);
+                    if (table.size < 4096) table.add (entry);
                 } else {
                     break;
                 }
