@@ -105,7 +105,7 @@ namespace Singularity.Apps.Keyframe {
             var quit = new SimpleAction ("quit", null);
             quit.activate.connect (() => {
                 var windows = new Gee.ArrayList<Gtk.Window> ();
-                foreach (var item in get_windows ()) windows.add (item);
+                foreach (var item in get_windows ().copy ()) windows.add (item);
                 foreach (var item in windows) item.close ();
             });
             add_action (quit);
