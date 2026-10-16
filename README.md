@@ -21,6 +21,10 @@ meson compile -C build
 meson install -C build
 ```
 
+## Third-party code
+
+- The vector engine is built from [singularity-draw](https://github.com/singularityos-lab/singularity-draw), whose Visio VSD reader (`src/io/vsd.vala`) is derived from [libvisio](https://git.libreoffice.org/libvisio) and stays under the Mozilla Public License 2.0.
+
 ## License
 
 GPL-3.0-only - see [LICENSE](LICENSE).
