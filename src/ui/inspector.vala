@@ -313,6 +313,7 @@ namespace Singularity.Apps.Keyframe {
             };
             for (int i = 0; i < items.length[0]; i++) menu.append (items[i, 0], "win.add-shape-item::" + items[i, 1]);
             add_btn.menu_model = menu;
+            add_btn.popover.add_css_class ("singularity-app-menu");
             add_group.add_header_suffix (add_btn);
             props_box.append (add_group);
             add_items (l, l.contents, "");
@@ -563,6 +564,7 @@ namespace Singularity.Apps.Keyframe {
                 menu.append (prop.name, "win.add-text-animator::" + k);
             }
             add.menu_model = menu;
+            add.popover.add_css_class ("singularity-app-menu");
             ah.add_header_suffix (add);
             text_box.append (ah);
             if (anims == null) return;
@@ -583,6 +585,7 @@ namespace Singularity.Apps.Keyframe {
                 smenu.append (_("Expression Selector"), "win.add-text-selector::expression|" + an.key);
                 foreach (var k in keys) smenu.append (Factory.animator_property (k).name, "win.add-animator-property::" + k + "|" + an.key);
                 add_sel.menu_model = smenu;
+                add_sel.popover.add_css_class ("singularity-app-menu");
                 ag.add_header_suffix (add_sel);
                 if (props != null) foreach (var pc in props.children) if (pc is Property) ag.add_row (editor (l, (Property) pc));
                 text_box.append (ag);

@@ -18,7 +18,7 @@ namespace Singularity.Apps.Keyframe {
         private Box graph_tools;
         private Label status;
         private Label time_label;
-        private DropDown resolution;
+        private ChoiceButton resolution;
         private ToggleButton roi_toggle;
         private Gee.HashMap<ViewerTool, ToggleButton> tool_buttons = new Gee.HashMap<ViewerTool, ToggleButton> ();
         private Gee.ArrayList<Widget> doc_bubbles = new Gee.ArrayList<Widget> ();
@@ -286,7 +286,7 @@ namespace Singularity.Apps.Keyframe {
 
         private Widget build_view_bar () {
             var bar = new Singularity.Widgets.ControlStrip (4, 4);
-            resolution = new DropDown.from_strings ({ _("Auto"), _("Full"), _("Half"), _("Third"), _("Quarter") });
+            resolution = new ChoiceButton.from_strings ({ _("Auto"), _("Full"), _("Half"), _("Third"), _("Quarter") });
             resolution.tooltip_text = _("Preview Resolution");
             int pref = app.settings_resolution ();
             resolution.selected = pref;
