@@ -205,3 +205,13 @@ install_data('data/dev.sinty.keyframe.metainfo.xml',
 install_data('data/icons/dev.sinty.keyframe.svg',
   install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'apps'
 )
+
+keyframe_service_conf = configuration_data()
+keyframe_service_conf.set('bindir', get_option('prefix') / get_option('bindir'))
+configure_file(
+  input: 'data/dev.sinty.keyframe.service.in',
+  output: 'dev.sinty.keyframe.service',
+  configuration: keyframe_service_conf,
+  install: true,
+  install_dir: get_option('datadir') / 'dbus-1' / 'services'
+)
