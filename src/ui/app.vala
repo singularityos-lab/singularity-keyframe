@@ -38,6 +38,7 @@ namespace Singularity.Apps.Keyframe {
             Expressions.install ();
             install_actions ();
             build_menu ();
+            KeyframeIntents.install (this);
             install_accels ();
         }
 
@@ -87,6 +88,12 @@ namespace Singularity.Apps.Keyframe {
                 w.open_project (file);
                 w.present ();
             }
+        }
+
+        internal KeyframeWindow shown_window () {
+            var w = window ();
+            w.present ();
+            return w;
         }
 
         private KeyframeWindow window () {

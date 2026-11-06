@@ -162,6 +162,7 @@ ui = files(
   'src/ui/test_script.vala',
   'src/ui/window.vala',
   'src/ui/app.vala',
+  'src/ui/agent_intents.vala',
 )
 
 draw = subproject('singularity-draw')
