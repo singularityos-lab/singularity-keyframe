@@ -553,18 +553,16 @@ namespace Singularity.Apps.Keyframe {
             var entry = new AudioPeaks ();
             peaks[f.id] = entry;
             string path = f.effective_path ();
-            new Thread<bool> ("keyframe-peaks", () => {
+            Async.dispatch(this, Async.Qos.USER, (c) => {
                 var clip = MediaPool.decode_audio (path, 8000);
-                Idle.add (() => {
+                return () => {
                     if (clip != null) {
                         entry.values = clip.peaks (4000);
                         entry.duration = clip.duration ();
                     }
                     entry.ready = true;
                     queue_draw ();
-                    return false;
-                });
-                return true;
+                };
             });
             return null;
         }

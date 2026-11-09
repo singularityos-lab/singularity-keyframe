@@ -59,7 +59,13 @@ namespace Singularity.Apps.Keyframe {
             running = false;
             cond.signal ();
             mutex.unlock ();
-            if (thread != null) thread.join ();
+            if (thread != null) {
+                var old = thread;
+                Async.dispatch (null, Async.Qos.BACKGROUND, (c) => {
+                    old.join ();
+                    return null;
+                });
+            }
             thread = null;
         }
 
@@ -155,15 +161,13 @@ namespace Singularity.Apps.Keyframe {
                 if (is_prefetch) {
                     var cid = comp.id;
                     int f = (int) Math.round (req.time * comp.fps);
-                    Idle.add (() => {
+                    Async.post(this, () => {
                         prefetch_progress (cid, f);
-                        return false;
                     });
                 } else {
                     var result = img;
-                    Idle.add (() => {
+                    Async.post(this, () => {
                         frame_ready (req, result);
-                        return false;
                     });
                 }
             }
