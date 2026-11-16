@@ -7,6 +7,7 @@ Icon=dev.sinty.keyframe
 Terminal=false
 Type=Application
 Categories=AudioVideo;Video;Graphics;2DGraphics;
+X-Sinty-FormFactors=desktop;tablet;phone
 MimeType=application/x-keyframe;
 Keywords=motion;animation;compositing;keyframe;lottie;titles;effects;tracking;vfx;
 StartupWMClass=dev.sinty.keyframe
