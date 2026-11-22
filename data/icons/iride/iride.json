@@ -1,0 +1,293 @@
+{
+ "format": 1,
+ "canvas": [
+  128,
+  128
+ ],
+ "box": [
+  0,
+  0,
+  128,
+  128
+ ],
+ "stack": [
+  {
+   "shadow": {
+    "dx": 0,
+    "dy": 2.8,
+    "blur": 3.2,
+    "color": "#591f05",
+    "opacity": 0.42,
+    "region": [
+     -12,
+     -12,
+     152,
+     152
+    ]
+   },
+   "stack": [
+    {
+     "layer": "layers/000.svg",
+     "piece": "panel-1"
+    },
+    {
+     "layer": "layers/001.svg",
+     "piece": "panel-1"
+    }
+   ]
+  },
+  {
+   "layer": "layers/002.svg",
+   "piece": "panel-1"
+  },
+  {
+   "clip": "M16 58L72 52Q76 52 76 56V108Q76 112 72 112L16 106Q8 105 8 98V66Q8 59 16 58Z",
+   "stack": [
+    {
+     "rim": "M16 58L72 52Q76 52 76 56V108Q76 112 72 112L16 106Q8 105 8 98V66Q8 59 16 58Z",
+     "light": [
+      8.0,
+      52.0,
+      76.0,
+      112.0
+     ],
+     "piece": "panel-1"
+    }
+   ]
+  },
+  {
+   "shadow": {
+    "dx": 0,
+    "dy": 2.8,
+    "blur": 3.2,
+    "color": "#4c0a24",
+    "opacity": 0.42,
+    "region": [
+     -12,
+     -12,
+     152,
+     152
+    ]
+   },
+   "stack": [
+    {
+     "layer": "layers/004.svg",
+     "piece": "panel-2"
+    },
+    {
+     "layer": "layers/005.svg",
+     "piece": "panel-2"
+    }
+   ]
+  },
+  {
+   "layer": "layers/006.svg",
+   "piece": "panel-2"
+  },
+  {
+   "clip": "M38 40L94 34Q98 34 98 38V90Q98 94 94 94L38 88Q30 87 30 80V48Q30 41 38 40Z",
+   "stack": [
+    {
+     "rim": "M38 40L94 34Q98 34 98 38V90Q98 94 94 94L38 88Q30 87 30 80V48Q30 41 38 40Z",
+     "light": [
+      30.0,
+      34.0,
+      98.0,
+      94.0
+     ],
+     "piece": "panel-2"
+    }
+   ]
+  },
+  {
+   "shadow": {
+    "dx": 0,
+    "dy": 2.8,
+    "blur": 3.2,
+    "color": "#141457",
+    "opacity": 0.42,
+    "region": [
+     -12,
+     -12,
+     152,
+     152
+    ]
+   },
+   "stack": [
+    {
+     "layer": "layers/008.svg",
+     "piece": "panel-3"
+    },
+    {
+     "layer": "layers/009.svg",
+     "piece": "panel-3"
+    }
+   ]
+  },
+  {
+   "layer": "layers/010.svg",
+   "piece": "panel-3"
+  },
+  {
+   "clip": "M60 22L116 16Q120 16 120 20V72Q120 76 116 76L60 70Q52 69 52 62V30Q52 23 60 22Z",
+   "stack": [
+    {
+     "rim": "M60 22L116 16Q120 16 120 20V72Q120 76 116 76L60 70Q52 69 52 62V30Q52 23 60 22Z",
+     "light": [
+      52.0,
+      16.0,
+      120.0,
+      76.0
+     ],
+     "piece": "panel-3"
+    }
+   ]
+  },
+  {
+   "layer": "layers/012.svg",
+   "piece": "curve"
+  },
+  {
+   "layer": "layers/013.svg",
+   "piece": "key"
+  }
+ ],
+ "motion": [
+  {
+   "piece": "panel-1",
+   "origin": [
+    42.0,
+    82.0
+   ],
+   "tracks": [
+    {
+     "kind": "translate",
+     "from": [
+      43.52,
+      -35.84
+     ],
+     "at": 0,
+     "duration": 300,
+     "ease": "spring"
+    }
+   ]
+  },
+  {
+   "piece": "panel-2",
+   "origin": [
+    64.0,
+    64.0
+   ],
+   "tracks": [
+    {
+     "kind": "translate",
+     "from": [
+      21.76,
+      -17.92
+     ],
+     "at": 0,
+     "duration": 300,
+     "ease": "spring"
+    }
+   ]
+  },
+  {
+   "piece": "panel-3",
+   "origin": [
+    86.0,
+    46.0
+   ],
+   "tracks": []
+  },
+  {
+   "piece": "curve",
+   "origin": [
+    64.0,
+    64.0
+   ],
+   "tracks": [
+    {
+     "kind": "reveal",
+     "from": [
+      0,
+      0,
+      60.0,
+      128
+     ],
+     "at": 260,
+     "duration": 740,
+     "ease": "linear"
+    }
+   ]
+  },
+  {
+   "piece": "key",
+   "origin": [
+    104.0,
+    36.0
+   ],
+   "tracks": [
+    {
+     "kind": "translate",
+     "from": [
+      -8.0,
+      6.001
+     ],
+     "at": 260,
+     "duration": 120,
+     "ease": "linear"
+    },
+    {
+     "kind": "translate",
+     "from": [
+      -12.0,
+      -9.0
+     ],
+     "at": 380,
+     "duration": 120,
+     "ease": "linear"
+    },
+    {
+     "kind": "translate",
+     "from": [
+      -11.0,
+      1.999
+     ],
+     "at": 500,
+     "duration": 120,
+     "ease": "linear"
+    },
+    {
+     "kind": "translate",
+     "from": [
+      -10.5,
+      1.999
+     ],
+     "at": 620,
+     "duration": 120,
+     "ease": "linear"
+    },
+    {
+     "kind": "scale",
+     "from": [
+      0.4,
+      0.4
+     ],
+     "at": 740,
+     "duration": 66,
+     "ease": "out"
+    },
+    {
+     "kind": "scale",
+     "from": [
+      1.6,
+      1.6
+     ],
+     "at": 806,
+     "duration": 134,
+     "ease": "linear"
+    }
+   ]
+  }
+ ]
+}
