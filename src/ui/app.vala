@@ -2,7 +2,7 @@ using Gtk;
 
 namespace Singularity.Apps.Keyframe {
 
-    public class KeyframeApp : Singularity.Application {
+    public class KeyframeApp : Singularity.Application, Singularity.Migration.Migratable {
         private const string CSS = """
 .keyframe-source-text,
 .keyframe-source-text text {
@@ -88,6 +88,43 @@ namespace Singularity.Apps.Keyframe {
                 w.open_project (file);
                 w.present ();
             }
+        }
+
+        public Variant save_model () {
+            return new VariantDict ().end ();
+        }
+
+        public async void restore_model (Variant model) throws Error {
+        }
+
+        public string window_kind (Gtk.Window w) {
+            return (w is KeyframeWindow) ? "editor" : "";
+        }
+
+        public Variant save_window (Gtk.Window w) {
+            return ((KeyframeWindow) w).save_migration ();
+        }
+
+        public string[] files () {
+            string[] all = {};
+            foreach (var item in get_windows ()) {
+                var editor = item as KeyframeWindow;
+                if (editor == null) continue;
+                foreach (var f in editor.migration_files ()) all += f;
+            }
+            return all;
+        }
+
+        public async Gtk.Window? rebuild_window (string kind, Variant data) throws Error {
+            if (kind != "editor") return null;
+            KeyframeWindow? editor = null;
+            foreach (var w in get_windows ()) {
+                var kw = w as KeyframeWindow;
+                if (kw != null && kw.doc.project.items.size == 0) editor = kw;
+            }
+            if (editor == null) editor = new KeyframeWindow (this);
+            editor.restore_migration (data);
+            return editor;
         }
 
         internal KeyframeWindow shown_window () {

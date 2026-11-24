@@ -388,6 +388,34 @@ namespace Singularity.Apps.Keyframe {
             time_changed ();
         }
 
+        public Variant save_state () {
+            var ids = new VariantBuilder (new VariantType ("as"));
+            foreach (var l in selection) ids.add ("s", l.id);
+            return new Variant ("(s@asd@as@as)", comp != null ? comp.id : "", ids.end (), time,
+                new Variant.strv (undo_stack.to_array ()), new Variant.strv (redo_stack.to_array ()));
+        }
+
+        public void restore_state (Variant state) {
+            string comp_id;
+            Variant ids, undo, redo;
+            double t;
+            state.get ("(s@asd@as@as)", out comp_id, out ids, out t, out undo, out redo);
+            undo_stack.clear ();
+            foreach (unowned string snap in undo.get_strv ()) undo_stack.add (snap);
+            redo_stack.clear ();
+            foreach (unowned string snap in redo.get_strv ()) redo_stack.add (snap);
+            var c = project.comp_by_id (comp_id);
+            if (c != null && c != comp) open_comp (c);
+            seek (t);
+            selection.clear ();
+            if (comp != null) foreach (unowned string id in ids.get_strv ()) {
+                var l = comp.layer_by_id (id);
+                if (l != null) selection.add (l);
+            }
+            selection_changed ();
+            history_changed ();
+        }
+
         public void replace_project (Project p) {
             undo_stack.clear ();
             redo_stack.clear ();

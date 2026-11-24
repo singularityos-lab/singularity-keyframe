@@ -327,6 +327,7 @@ namespace Singularity.Apps.Keyframe {
             status.hexpand = true;
             status.xalign = 1;
             status.ellipsize = Pango.EllipsizeMode.START;
+            Singularity.Migration.mark_live (status);
             bar.append (status);
             return bar;
         }
@@ -522,6 +523,68 @@ namespace Singularity.Apps.Keyframe {
             } catch (Error e) {
                 toast (_("Could not open the project: %s").printf (e.message));
             }
+        }
+
+        public Variant save_migration () {
+            var d = new VariantDict ();
+            d.insert_value ("page", new Variant.string (content_stack.visible_child_name));
+            if (content_stack.visible_child_name != "workspace") return d.end ();
+            var p = doc.project;
+            d.insert_value ("project", new Variant.string (NativeFormat.snapshot (p)));
+            d.insert_value ("path", new Variant.string (p.path != "" ? Singularity.Migration.portable_path (File.new_for_path (p.path)) : ""));
+            d.insert_value ("base", new Variant.string (p.base_dir != "" ? Singularity.Migration.portable_path (File.new_for_path (p.base_dir)) : ""));
+            d.insert_value ("modified", new Variant.boolean (p.modified));
+            d.insert_value ("document", doc.save_state ());
+            d.insert_value ("resolution", new Variant.uint32 (resolution.selected));
+            d.insert_value ("viewer", new Variant ("(bdddi)", viewer.fit_mode, viewer.zoom, viewer.offset_x, viewer.offset_y, (int) viewer.tool));
+            d.insert_value ("sidebar", new Variant.boolean (get_sidebar_visible ()));
+            return d.end ();
+        }
+
+        public string[] migration_files () {
+            string[] files = {};
+            if (content_stack.visible_child_name != "workspace") return files;
+            var p = doc.project;
+            if (p.path != "") files += Singularity.Migration.portable_path (File.new_for_path (p.path));
+            foreach (var item in p.items) {
+                var footage = item as Footage;
+                if (footage == null || footage.path == "") continue;
+                string path = Path.is_absolute (footage.path) ? footage.path : Path.build_filename (p.base_dir, footage.path);
+                files += Singularity.Migration.portable_path (File.new_for_path (path));
+            }
+            return files;
+        }
+
+        public void restore_migration (Variant data) throws Error {
+            var d = new VariantDict (data);
+            string snapshot;
+            if (!d.lookup ("project", "s", out snapshot)) return;
+            string path = "", base_dir = "";
+            bool modified = false;
+            d.lookup ("path", "s", out path);
+            d.lookup ("base", "s", out base_dir);
+            d.lookup ("modified", "b", out modified);
+            string local_base = base_dir != "" ? Singularity.Migration.local_file (base_dir).get_path () : "";
+            var p = NativeFormat.restore (snapshot, local_base);
+            p.path = path != "" ? Singularity.Migration.local_file (path).get_path () : "";
+            p.base_dir = local_base;
+            p.modified = modified;
+            load_into_workspace (p);
+            var state = d.lookup_value ("document", new VariantType ("(sasdasas)"));
+            if (state != null) doc.restore_state (state);
+            uint chosen;
+            if (d.lookup ("resolution", "u", out chosen)) resolution.selected = chosen;
+            bool fit;
+            double zoom, x, y;
+            int tool;
+            if (d.lookup ("viewer", "(bdddi)", out fit, out zoom, out x, out y, out tool)) {
+                if (!fit) viewer.show_area (zoom, x, y);
+                set_tool ((ViewerTool) tool);
+            }
+            bool sidebar;
+            if (d.lookup ("sidebar", "b", out sidebar)) set_sidebar_visible (sidebar);
+            update_title ();
+            update_history ();
         }
 
         public async bool save (bool save_as) {

@@ -179,8 +179,8 @@ namespace Singularity.Apps.Keyframe {
             offset_x = left + (w - left - doc.comp.width * zoom) / 2;
             offset_y = (h - doc.comp.height * zoom) / 2;
             fit_mode = true;
-            update_auto_downsample ();
-            queue_draw ();
+            if (update_auto_downsample ()) refresh ();
+            else queue_draw ();
         }
 
         public void set_zoom (double z, double cx = -1, double cy = -1) {
@@ -197,14 +197,23 @@ namespace Singularity.Apps.Keyframe {
             refresh ();
         }
 
-        private void update_auto_downsample () {
+        public void show_area (double z, double x, double y) {
+            zoom = z;
+            offset_x = x;
+            offset_y = y;
+            fit_mode = false;
+            update_auto_downsample ();
+            refresh ();
+        }
+
+        private bool update_auto_downsample () {
             int ds = 1;
             if (zoom < 0.2) ds = 4;
             else if (zoom < 0.34) ds = 3;
             else if (zoom < 0.6) ds = 2;
-            if (ds != doc.auto_downsample) {
-                doc.auto_downsample = ds;
-            }
+            if (ds == doc.auto_downsample) return false;
+            doc.auto_downsample = ds;
+            return true;
         }
 
         public Point to_comp (double x, double y) {
