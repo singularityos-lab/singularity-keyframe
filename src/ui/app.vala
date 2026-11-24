@@ -2,7 +2,7 @@ using Gtk;
 
 namespace Singularity.Apps.Keyframe {
 
-    public class KeyframeApp : Singularity.Application, Singularity.Migration.Migratable {
+    public class KeyframeApp : Singularity.Application, Singularity.Migration.Migratable, Singularity.Startup.Bootable {
         private const string CSS = """
 .keyframe-source-text,
 .keyframe-source-text text {
@@ -77,11 +77,42 @@ namespace Singularity.Apps.Keyframe {
             }
         }
 
-        public override void activate () {
-            window ().present ();
+        public Singularity.Startup.Plan build_plan (Singularity.Startup.Request request) {
+            var plan = new Singularity.Startup.Plan ();
+            plan.version = "keyframe-1";
+            if (request.kind == Singularity.Startup.RequestKind.SERVICE) {
+                plan.main ("ready", Singularity.Startup.Category.PREPARE, (c) => {})
+                    .reaches (Singularity.Startup.Milestone.SHELL_READY)
+                    .reaches (Singularity.Startup.Milestone.CONTENT_READY)
+                    .reaches (Singularity.Startup.Milestone.INTERACTIVE);
+                return plan;
+            }
+            if (request.kind == Singularity.Startup.RequestKind.OPEN) {
+                var files = request.files ();
+                plan.main ("open-file", Singularity.Startup.Category.SHELL, (c) => {
+                    open_files (files);
+                    c.window = get_active_window ();
+                }).reaches (Singularity.Startup.Milestone.SHELL_READY)
+                  .reaches (Singularity.Startup.Milestone.CONTENT_READY)
+                  .reaches (Singularity.Startup.Milestone.INTERACTIVE);
+                return plan;
+            }
+            plan.main ("window", Singularity.Startup.Category.SHELL, (c) => {
+                var w = window ();
+                w.present ();
+                c.window = w;
+            }).reaches (Singularity.Startup.Milestone.SHELL_READY)
+              .reaches (Singularity.Startup.Milestone.CONTENT_READY)
+              .reaches (Singularity.Startup.Milestone.INTERACTIVE);
+            return plan;
         }
 
-        public override void open (File[] files, string hint) {
+        public void handle_request (Singularity.Startup.Request request) {
+            if (request.kind == Singularity.Startup.RequestKind.OPEN) open_files (request.files ());
+            else window ().present ();
+        }
+
+        private void open_files (File[] files) {
             foreach (var file in files) {
                 var w = get_active_window () as KeyframeWindow;
                 if (w == null || w.doc.project.items.size > 0) w = new KeyframeWindow (this);
